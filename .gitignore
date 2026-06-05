@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Data — too big for GitHub, kept locally
+cleaning/data/raw/*
+cleaning/data/clean/*
+
+# But keep the folder structure
+!cleaning/data/raw/.gitkeep
+!cleaning/data/clean/.gitkeep
