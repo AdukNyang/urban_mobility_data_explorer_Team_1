@@ -1,0 +1,9 @@
+[2026-06-08 01:16:10] ==================================================
+[2026-06-08 01:16:10]         Starting cleaning pipeline process
+[2026-06-08 01:16:10] ==================================================
+[2026-06-08 01:16:10] ─── STEP 1: Load + fixups (Issues A, B) ───
+[2026-06-08 01:16:10] Loading yellow_tripdata_2019-01.csv ...
+[2026-06-08 01:18:31] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
+[2026-06-08 01:18:31] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
+[2026-06-08 01:18:32] Issue B: converted store_and_fwd_flag (Y/N) → bool
+[2026-06-08 01:18:32] Step 1 complete. Current row count: 7,667,792
