@@ -1,0 +1,89 @@
+"""
+in this script i am goinng to load clean the yellow_tripdata_2019-01.csv file and writes and saves it as a clean csv file
+to run it python cleaning/src/clean.py
+"""
+from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+
+# configuring the path
+CLEANING_DIR = Path(__file__).resolve().parent.parent
+RAW_TRIPS    = CLEANING_DIR / "data" / "raw"   / "yellow_tripdata_2019-01.csv"
+RAW_LOOKUP   = CLEANING_DIR / "data" / "raw"   / "taxi_zone_lookup.csv"
+CLEAN_OUT    = CLEANING_DIR / "data" / "clean" / "trips_clean.csv"
+LOG_FILE     = CLEANING_DIR / "logs" / "cleaning_log.txt"
+
+#writes timestamp lines to cleaning_log.txt
+def log(msg: str, reset: bool = False) -> None:
+    if reset:
+        mode = "w"
+    else:
+        mode = "a"
+
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, mode, encoding="utf-8") as f:
+        f.write(f"[{timestamp}] {msg}\n")
+
+# the main pipeline
+def main() -> None:
+    log("="*50, reset=True)
+    log("        Starting cleaning pipeline process")
+    log("="*50)
+
+#STEP 1
+    log("─── STEP 1: Load + fixups (Issues A, B) ───")
+
+    #load csv with the explicit data types for the columns
+    #Explicit dtype map. We tell pandas EXACTLY what each column is, so that it doesn't waste memory Int8=1 byte or turn silently integer columns into floats and so that bugs are seen earlier
+    dtype_map = {
+            "VendorID":              "Int8",     # we only have 2 providers CMT and Verifone so values=(1, 2)
+            "passenger_count":       "Int8",     # we expect 0 to 6 passengers
+            "trip_distance":         "float32",
+            "RatecodeID":            "Int8",     # 1..6 documented (+ stray 99)
+            "store_and_fwd_flag":    "string",   # Y/N — converted to bool in Chunk 6
+            "PULocationID":          "Int16",    # max value 265, Int8 too small
+            "DOLocationID":          "Int16",
+            "payment_type":          "Int8",    
+            "fare_amount":           "float32",
+            "extra":                 "float32",
+            "mta_tax":               "float32",
+            "tip_amount":            "float32",
+            "tolls_amount":          "float32",
+            "improvement_surcharge": "float32",
+            "total_amount":          "float32",
+            "congestion_surcharge":  "float32",
+        }
+        
+    log(f"Loading {RAW_TRIPS.name} ...")
+
+    df = pd.read_csv(
+        RAW_TRIPS,
+        dtype=dtype_map,
+        # parse_dates tells pandas to convert these columns from strings to
+        # real datetime objects. Comparisons and arithmetic become possible.
+        parse_dates=["tpep_pickup_datetime", "tpep_dropoff_datetime"],
+    )
+
+    rows_loaded = len(df)
+    log(f"Loaded {rows_loaded:,} raw rows from {RAW_TRIPS.name}")
+
+    #issue A: Here we resolve issue A where empty congestion_surcharge are turned to 0.0 and this is a documented assumption and downstream math needs a numeric value
+    null_congestion = int(df["congestion_surcharge"].isna().sum())
+    df["congestion_surcharge"] = df["congestion_surcharge"].fillna(0.0)
+    log(
+        f"Issue A: filled {null_congestion:,} null congestion_surcharge values with 0.0"
+    )
+
+    #issue B: Here we resolve issue B where we store and flag Y/N values as boolean True/False we also standardize the type now so downstream code and SQlite schema later can treat it as a eral boolean
+    df["store_and_fwd_flag"] = (
+        df["store_and_fwd_flag"]
+        .map({"Y": True, "N": False})
+        .astype("boolean")
+    )
+    log("Issue B: converted store_and_fwd_flag (Y/N) → bool")
+    log(f"Step 1 complete. Current row count: {len(df):,}")
+
+#Entry point of the script
+if __name__ == "__main__":
+    main()
