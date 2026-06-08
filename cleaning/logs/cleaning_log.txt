@@ -1,33 +1,37 @@
-[2026-06-08 14:01:51] ==================================================
-[2026-06-08 14:01:51]         Starting cleaning pipeline process
-[2026-06-08 14:01:51] ==================================================
+[2026-06-08 14:21:12] ==================================================
+[2026-06-08 14:21:12]         Starting cleaning pipeline process
+[2026-06-08 14:21:12] ==================================================
 
-[2026-06-08 14:01:51] ─── STEP 1: Load + fixups (Issues A, B) ───
-[2026-06-08 14:01:51] Loading yellow_tripdata_2019-01.csv ...
-[2026-06-08 14:03:17] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
-[2026-06-08 14:03:17] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
-[2026-06-08 14:03:18] Issue B: converted store_and_fwd_flag (Y/N) → bool
-[2026-06-08 14:03:18] Step 1 complete. Current row count: 7,667,792
+[2026-06-08 14:21:12] ─── STEP 1: Load + fixups (Issues A, B) ───
+[2026-06-08 14:21:12] Loading yellow_tripdata_2019-01.csv ...
+[2026-06-08 14:22:12] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
+[2026-06-08 14:22:12] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
+[2026-06-08 14:22:13] Issue B: converted store_and_fwd_flag (Y/N) → bool
+[2026-06-08 14:22:13] Step 1 complete. Current row count: 7,667,792
 
-[2026-06-08 14:03:18] ─── STEP 2: Date range filter (Issue C) ───
-[2026-06-08 14:03:23] Dropped 537 rows with pickup outside Jan 2019
-[2026-06-08 14:03:23] Step 2 complete. Rows: 7,667,255
+[2026-06-08 14:22:13] ─── STEP 2: Date range filter (Issue C) ───
+[2026-06-08 14:22:14] Dropped 537 rows with pickup outside Jan 2019
+[2026-06-08 14:22:14] Step 2 complete. Rows: 7,667,255
 
-[2026-06-08 14:03:23] ─── STEP 3: Logical consistency (Issue D) ───
-[2026-06-08 14:03:26] Dropped 6,291 rows with non-positive trip duration
-[2026-06-08 14:03:26] Step 3 complete. Rows: 7,660,964
+[2026-06-08 14:22:14] ─── STEP 3: Logical consistency (Issue D) ───
+[2026-06-08 14:22:16] Dropped 6,291 rows with non-positive trip duration
+[2026-06-08 14:22:16] Step 3 complete. Rows: 7,660,964
 
-[2026-06-08 14:03:26] ─── STEP 4: Numeric outlier bounds (Issues E, F, G) ───
-[2026-06-08 14:03:29] Issue F: dropped 117,167 rows with passenger_count outside [1, 6]
-[2026-06-08 14:03:32] Issue G: dropped 47,284 rows with trip_distance outside (0, 100] miles
-[2026-06-08 14:03:36] Issue E: dropped 6,898 rows with fare_amount outside [2.5, 500]
-[2026-06-08 14:03:38] Dropped 48,437 rows with trip_duration outside [1 min, 6 hours]
-[2026-06-08 14:03:43] Dropped 337 rows with avg_speed_mph >= 100 mph
-[2026-06-08 14:03:43] Step 4 complete. Rows: 7,440,841
+[2026-06-08 14:22:16] ─── STEP 4: Numeric outlier bounds (Issues E, F, G) ───
+[2026-06-08 14:22:18] Issue F: dropped 117,167 rows with passenger_count outside [1, 6]
+[2026-06-08 14:22:20] Issue G: dropped 47,284 rows with trip_distance outside (0, 100] miles
+[2026-06-08 14:22:21] Issue E: dropped 6,898 rows with fare_amount outside [2.5, 500]
+[2026-06-08 14:22:23] Dropped 48,437 rows with trip_duration outside [1 min, 6 hours]
+[2026-06-08 14:22:24] Dropped 337 rows with avg_speed_mph >= 100 mph
+[2026-06-08 14:22:24] Step 4 complete. Rows: 7,440,841
 
-[2026-06-08 14:03:43] ─── STEP 5: Domain + FK validation (Issues H, I) ───
-[2026-06-08 14:03:45] Issue H: dropped 88 rows with RatecodeID outside [1, 6]
-[2026-06-08 14:03:45] Dropped 0 rows with payment_type outside [1, 6]
-[2026-06-08 14:03:47] Issue I: dropped 159,841 rows with PU/DO LocationID not in valid set
-[2026-06-08 14:03:47] Step 5 complete. Rows: 7,280,912
+[2026-06-08 14:22:24] ─── STEP 5: Domain + FK validation (Issues H, I) ───
+[2026-06-08 14:22:26] Issue H: dropped 88 rows with RatecodeID outside [1, 6]
+[2026-06-08 14:22:26] Dropped 0 rows with payment_type outside [1, 6]
+[2026-06-08 14:22:28] Issue I: dropped 159,841 rows with PU/DO LocationID not in valid set
+[2026-06-08 14:22:28] Step 5 complete. Rows: 7,280,912
+
+[2026-06-08 14:22:28] ─── STEP 6: Deduplicate ───
+[2026-06-08 14:22:49] Dropped 0 exact duplicate rows
+[2026-06-08 14:22:49] Step 6 complete. Rows: 7,280,912
 

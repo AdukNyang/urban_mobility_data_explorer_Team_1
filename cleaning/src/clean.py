@@ -194,7 +194,20 @@ def main() -> None:
     log(f"Step 5 complete. Rows: {len(df):,}")  
 
     log()
+#STEP 6
+# Deduplicate exact duplicate rows
 
+    log("─── STEP 6: Deduplicate ───")
+
+    before = len(df)
+    df = df.drop_duplicates()
+    dropped = before - len(df)
+
+    log(f"Dropped {dropped:,} exact duplicate rows")
+    log(f"Step 6 complete. Rows: {len(df):,}")
+
+    log()
+    
 #Entry point of the script
 if __name__ == "__main__":
     main()
