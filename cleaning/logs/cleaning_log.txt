@@ -1,19 +1,27 @@
-[2026-06-08 02:15:50] ==================================================
-[2026-06-08 02:15:50]         Starting cleaning pipeline process
-[2026-06-08 02:15:50] ==================================================
+[2026-06-08 13:42:23] ==================================================
+[2026-06-08 13:42:23]         Starting cleaning pipeline process
+[2026-06-08 13:42:23] ==================================================
 
-[2026-06-08 02:15:50] ─── STEP 1: Load + fixups (Issues A, B) ───
-[2026-06-08 02:15:50] Loading yellow_tripdata_2019-01.csv ...
-[2026-06-08 02:19:41] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
-[2026-06-08 02:19:42] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
-[2026-06-08 02:19:42] Issue B: converted store_and_fwd_flag (Y/N) → bool
-[2026-06-08 02:19:42] Step 1 complete. Current row count: 7,667,792
+[2026-06-08 13:42:23] ─── STEP 1: Load + fixups (Issues A, B) ───
+[2026-06-08 13:42:23] Loading yellow_tripdata_2019-01.csv ...
+[2026-06-08 13:44:57] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
+[2026-06-08 13:44:57] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
+[2026-06-08 13:44:57] Issue B: converted store_and_fwd_flag (Y/N) → bool
+[2026-06-08 13:44:57] Step 1 complete. Current row count: 7,667,792
 
-[2026-06-08 02:19:42] ─── STEP 2: Date range filter (Issue C) ───
-[2026-06-08 02:19:43] Dropped 537 rows with pickup outside Jan 2019
-[2026-06-08 02:19:43] Step 2 complete. Rows: 7,667,255
+[2026-06-08 13:44:57] ─── STEP 2: Date range filter (Issue C) ───
+[2026-06-08 13:45:02] Dropped 537 rows with pickup outside Jan 2019
+[2026-06-08 13:45:02] Step 2 complete. Rows: 7,667,255
 
-[2026-06-08 02:19:43] ─── STEP 3: Logical consistency (Issue D) ───
-[2026-06-08 02:19:48] Dropped 6,291 rows with non-positive trip duration
-[2026-06-08 02:19:48] Step 3 complete. Rows: 7,660,964
+[2026-06-08 13:45:02] ─── STEP 3: Logical consistency (Issue D) ───
+[2026-06-08 13:45:06] Dropped 6,291 rows with non-positive trip duration
+[2026-06-08 13:45:06] Step 3 complete. Rows: 7,660,964
+
+[2026-06-08 13:45:06] ─── STEP 4: Numeric outlier bounds (Issues E, F, G) ───
+[2026-06-08 13:45:08] Issue F: dropped 117,167 rows with passenger_count outside [1, 6]
+[2026-06-08 13:45:10] Issue G: dropped 47,284 rows with trip_distance outside (0, 100] miles
+[2026-06-08 13:45:13] Issue E: dropped 6,898 rows with fare_amount outside [2.5, 500]
+[2026-06-08 13:45:15] Dropped 48,437 rows with trip_duration outside [1 min, 6 hours]
+[2026-06-08 13:45:17] Dropped 337 rows with avg_speed_mph >= 100 mph
+[2026-06-08 13:45:17] Step 4 complete. Rows: 7,440,841
 
