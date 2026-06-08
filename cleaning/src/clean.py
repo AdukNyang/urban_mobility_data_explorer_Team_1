@@ -112,8 +112,23 @@ def main() -> None:
     log()
 
 #STEP 3
+#trips where the dropoff happens at the same time as or before the pickup. We compute the duration column here because Steps 4 and 7 will both reuse it.
 
+    log("─── STEP 3: Logical consistency (Issue D) ───")
 
+    df["trip_duration_seconds"] = (
+        df["tpep_dropoff_datetime"] - df["tpep_pickup_datetime"]
+    ).dt.total_seconds()
+
+    before = len(df)
+    df = df[df["trip_duration_seconds"] > 0]
+    dropped = before - len(df)
+
+    log(f"Dropped {dropped:,} rows with non-positive trip duration")
+    log(f"Step 3 complete. Rows: {len(df):,}")
+
+    log()
+    
 #Entry point of the script
 if __name__ == "__main__":
     main()
