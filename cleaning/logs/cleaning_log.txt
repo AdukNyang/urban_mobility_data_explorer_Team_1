@@ -4,3 +4,11 @@
 
 [2026-06-08 02:05:15] ─── STEP 1: Load + fixups (Issues A, B) ───
 [2026-06-08 02:05:15] Loading yellow_tripdata_2019-01.csv ...
+[2026-06-08 02:08:26] Loaded 7,667,792 raw rows from yellow_tripdata_2019-01.csv
+[2026-06-08 02:08:26] Issue A: filled 4,855,978 null congestion_surcharge values with 0.0
+[2026-06-08 02:08:27] Issue B: converted store_and_fwd_flag (Y/N) → bool
+[2026-06-08 02:08:27] Step 1 complete. Current row count: 7,667,792
+
+[2026-06-08 02:08:27] ─── STEP 2: Date range filter (Issue C) ───
+[2026-06-08 02:08:29] Dropped 537 rows with pickup outside Jan 2019
+[2026-06-08 02:08:29] Step 2 complete. Rows: 7,667,255
