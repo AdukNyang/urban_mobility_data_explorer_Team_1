@@ -207,7 +207,60 @@ def main() -> None:
     log(f"Step 6 complete. Rows: {len(df):,}")
 
     log()
+
+#STEP 7
+# Derive analytical features from the cleaned base columns. Each feature unlocks an insight the raw columns can't directly answer.    
+
+    log("─── STEP 7: Feature engineering (Issue J) ───")
+
+    # trip_duration_min  convenient display unit (minutes vs seconds)
+    df["trip_duration_min"] = df["trip_duration_seconds"] / 60
+
+    # pickup_hour  hour of day (0-23) for rush-hour / late-night patterns
+    df["pickup_hour"] = df["tpep_pickup_datetime"].dt.hour
+
+    # pickup_dow  day of week (0=Mon, 6=Sun) for weekly demand patterns
+    df["pickup_dow"] = df["tpep_pickup_datetime"].dt.dayofweek
     
+    #fare per mile
+    df["fare_per_mile"] = df["fare_amount"] / df["trip_distance"]
+
+    # is_airport_trip — boolean if either endpoint is JFK / LGA / EWR. flagging them enables segmented analysis.
+    AIRPORT_ZONES = {1, 132, 138}  # EWR, JFK, LGA per taxi_zone_lookup
+    df["is_airport_trip"] = (
+        df["PULocationID"].isin(AIRPORT_ZONES) |
+        df["DOLocationID"].isin(AIRPORT_ZONES)
+    )
+
+    # tip_percentage — only meaningful for card payments (payment_type=1). Cash tips aren't recorded by the meter, so computing tip% on cash trips would falsely show 0% across the board.
+    df["tip_percentage"] = (
+        df["tip_amount"] / df["fare_amount"] * 100
+    ).where(df["payment_type"] == 1)
+
+    # In theory: total = fare + extra + mta + tip + tolls + improvement + congestion. In practice: rounding artifacts and unrecorded cash tips cause mismatches.
+    component_sum = (
+        df["fare_amount"] + df["extra"] + df["mta_tax"] +
+        df["tip_amount"] + df["tolls_amount"] +
+        df["improvement_surcharge"] + df["congestion_surcharge"]
+    )
+    df["total_reconciles"] = (component_sum - df["total_amount"]).abs() < 0.10
+
+    log("Added 7 features: trip_duration_min, pickup_hour, pickup_dow,")
+    log("  fare_per_mile, is_airport_trip, tip_percentage, total_reconciles")
+    log(f"Step 7 complete. Rows: {len(df):,}, Columns: {len(df.columns)}")
+
+    log()
+
+#end of the pipeline
+    log("─── Writing cleaned data to disk ───")
+    df.to_csv(CLEAN_OUT, index=False)
+    log(f"Wrote {len(df):,} rows × {len(df.columns)} columns to {CLEAN_OUT.name}")
+
+    log()
+    log("=" * 50)
+    log("        Cleaning pipeline complete")
+    log("=" * 50)    
+
 #Entry point of the script
 if __name__ == "__main__":
     main()
