@@ -25,7 +25,7 @@ Profiling revealed ten distinct data quality issues, labeled A–J:
 | G | Zero trip distance | 52,560 |
 | H | Undocumented `RatecodeID = 99` | 252 |
 | I | LocationID 264 or 265 (Unknown / Outside NYC) | 161,951 |
-| J | `total_amount` not matching sum of components | TODO |
+| J | `total_amount` not matching sum of components | Flagged via `total_reconciles` column (no rows dropped) |
 
 ### 2.3 Cleaning decisions
 
