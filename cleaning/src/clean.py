@@ -166,7 +166,35 @@ def main() -> None:
     log(f"Step 4 complete. Rows: {len(df):,}")
 
     log()
-    
+
+#STEP 5
+# Three checks: drop rows with categorical values outside their documented ranges, and drop rows whose pickup/dropoff zone IDs don't exist in the lookup table or refer to placeholder zones.
+    log("─── STEP 5: Domain + FK validation (Issues H, I) ───")  
+    #Issue H TLC documents only RatecodeIDs 1-6. Profiling found 252 rows with RatecodeID = 99 — an undocumented value. Drop to keep downstream rate-code logic interpretable.
+    before = len(df)
+    df = df[df["RatecodeID"].between(1, 6)]
+    log(f"Issue H: dropped {before - len(df):,} rows with RatecodeID outside [1, 6]")
+
+    # TLC documents only payment_types 1-6. No specific issue surfaced during profiling, but worth validating — rogue values would skew tip/payment analytics.
+    before = len(df)
+    df = df[df["payment_type"].between(1, 6)]
+    log(f"Dropped {before - len(df):,} rows with payment_type outside [1, 6]")
+
+    # PU/DO LocationID must be in lookup AND not 264 or 265 Issue I also catches any data corruption (LocationID > 265 or < 1).
+    zone_lookup = pd.read_csv(RAW_LOOKUP)
+    valid_zones = set(zone_lookup["LocationID"]) - {264, 265}
+
+    before = len(df)
+    df = df[
+        df["PULocationID"].isin(valid_zones) &
+        df["DOLocationID"].isin(valid_zones)
+    ]
+    log(f"Issue I: dropped {before - len(df):,} rows with PU/DO LocationID not in valid set")
+
+    log(f"Step 5 complete. Rows: {len(df):,}")  
+
+    log()
+
 #Entry point of the script
 if __name__ == "__main__":
     main()
