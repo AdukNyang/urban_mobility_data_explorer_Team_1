@@ -15,21 +15,26 @@ CLEAN_OUT    = CLEANING_DIR / "data" / "clean" / "trips_clean.csv"
 LOG_FILE     = CLEANING_DIR / "logs" / "cleaning_log.txt"
 
 #writes timestamp lines to cleaning_log.txt
-def log(msg: str, reset: bool = False) -> None:
+def log(msg: str = "", reset: bool = False) -> None:
     if reset:
         mode = "w"
     else:
         mode = "a"
 
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open(LOG_FILE, mode, encoding="utf-8") as f:
-        f.write(f"[{timestamp}] {msg}\n")
+        if msg == "":
+            f.write("\n")
+        else:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            f.write(f"[{timestamp}] {msg}\n")
 
 # the main pipeline
 def main() -> None:
     log("="*50, reset=True)
     log("        Starting cleaning pipeline process")
     log("="*50)
+
+    log()
 
 #STEP 1
     log("─── STEP 1: Load + fixups (Issues A, B) ───")
@@ -83,6 +88,31 @@ def main() -> None:
     )
     log("Issue B: converted store_and_fwd_flag (Y/N) → bool")
     log(f"Step 1 complete. Current row count: {len(df):,}")
+
+    log()
+
+#STEP 2
+#drop trips outside january 2019 this does not include rides that started in january but ended in february and we are only looking at pickup dates
+
+    log("─── STEP 2: Date range filter (Issue C) ───")
+
+    JAN_START = pd.Timestamp("2019-01-01")
+    FEB_START = pd.Timestamp("2019-02-01")
+
+    before = len(df)
+    df = df[
+        (df["tpep_pickup_datetime"] >= JAN_START) &
+        (df["tpep_pickup_datetime"] <  FEB_START)
+    ]
+    dropped = before - len(df)
+
+    log(f"Dropped {dropped:,} rows with pickup outside Jan 2019")
+    log(f"Step 2 complete. Rows: {len(df):,}")
+
+    log()
+
+#STEP 3
+
 
 #Entry point of the script
 if __name__ == "__main__":
