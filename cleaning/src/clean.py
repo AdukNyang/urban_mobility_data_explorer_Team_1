@@ -129,6 +129,44 @@ def main() -> None:
 
     log()
     
+#STEP 4
+#Applies lower and upper bounds to four numeric columns and one derived metric. Each threshold is a judgment call: lower bounds are regulatory or physical (NYC minimum fare, max 6 passengers, positive distance), upper bounds are conservatively generous to preserve legitimate edge cases while removing clear data corruption.
+    log("─── STEP 4: Numeric outlier bounds (Issues E, F, G) ───")
+
+
+    # maximum for a yellow cab (6 passengers).
+    before = len(df)
+    df = df[(df["passenger_count"] >= 1) & (df["passenger_count"] <= 6)]
+    log(f"Issue F: dropped {before - len(df):,} rows with passenger_count outside [1, 6]")
+    
+    # legitimate metro ride is well under 100.
+    before = len(df)
+    df = df[(df["trip_distance"] > 0) & (df["trip_distance"] <= 100)]
+    log(f"Issue G: dropped {before - len(df):,} rows with trip_distance outside (0, 100] miles")
+    
+    #fare_amount in [2.5, 500]
+    before = len(df)
+    df = df[(df["fare_amount"] >= 2.5) & (df["fare_amount"] <= 500)]
+    log(f"Issue E: dropped {before - len(df):,} rows with fare_amount outside [2.5, 500]")
+    
+    #trip_duration_seconds in [60, 21600]
+    before = len(df)
+    df = df[
+        (df["trip_duration_seconds"] >= 60) &
+        (df["trip_duration_seconds"] <= 21600)
+    ]
+    log(f"Dropped {before - len(df):,} rows with trip_duration outside [1 min, 6 hours]")
+    
+    # Distance / duration sanity check. NYC speed limits cap at 50 mph; any implied speed ≥100 mph means distance or duration is corrupted. We store this as a column — Step 7 will reuse it as the avg_speed_mph feature.
+    df["avg_speed_mph"] = df["trip_distance"] / (df["trip_duration_seconds"] / 3600)
+    before = len(df)
+    df = df[df["avg_speed_mph"] < 100]
+    log(f"Dropped {before - len(df):,} rows with avg_speed_mph >= 100 mph")
+
+    log(f"Step 4 complete. Rows: {len(df):,}")
+
+    log()
+    
 #Entry point of the script
 if __name__ == "__main__":
     main()
