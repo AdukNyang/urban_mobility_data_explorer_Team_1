@@ -6,6 +6,9 @@ __pycache__/
 cleaning/data/raw/*
 cleaning/data/clean/*
 
+# Ignore the certificates, but keep the folder structure
+backend/db/ca.pem
+
 # But keep the folder structure
 !cleaning/data/raw/.gitkeep
 !cleaning/data/clean/.gitkeep
