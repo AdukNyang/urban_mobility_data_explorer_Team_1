@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
+*.env
 
 # Data — too big for GitHub, kept locally
 cleaning/data/raw/*
