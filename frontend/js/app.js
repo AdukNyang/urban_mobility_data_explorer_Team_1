@@ -285,4 +285,13 @@ document.getElementById("resetBtn").addEventListener("click", function() {
   loadMap();
 });
 
+document.getElementById("paymentFilter").addEventListener("change", async function() {
+  if (this.value === "all") {
+    loadFarePayment();
+    return;
+  }
+  loadFarePayment("payment");
+  document.getElementById("farePaymentSelect").value = "payment";
+});
+
 loadBoroughs();
