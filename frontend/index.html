@@ -40,21 +40,33 @@
 
     <section class="charts">
         <div class="chart-box">
-            <div class="chart-toggle">
-                <button class="toggle-btn active" id="byHourBtn">By Hour</button>
-                <button class="toggle-btn" id="byDayBtn">By Day</button>
+            <div class="chart-header">
+                <h3>Trip Patterns</h3>
+                <select id="tripPatternSelect">
+                    <option value="hour">By Hour of Day</option>
+                    <option value="day">By Day of Week</option>
+                </select>
             </div>
             <canvas id="tripPatternChart"></canvas>
         </div>
         <div class="chart-box">
-            <div class="chart-toggle">
-                <button class="toggle-btn active" id="fareBtn">Fare Distribution</button>
-                <button class="toggle-btn" id="paymentBtn">Payment Types</button>
+            <div class="chart-header">
+                <h3>Fare &amp; Payment</h3>
+                <select id="farePaymentSelect">
+                    <option value="fare">Fare Distribution</option>
+                    <option value="payment">Payment Types</option>
+                </select>
             </div>
             <canvas id="farePaymentChart"></canvas>
         </div>
-        <div class="chart-box"><canvas id="topZonesChart"></canvas></div>
-        <div class="chart-box"><canvas id="airportChart"></canvas></div>
+        <div class="chart-box">
+            <h3>Top 10 Pickup Zones</h3>
+            <canvas id="topZonesChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Airport vs City Trips</h3>
+            <canvas id="airportChart"></canvas>
+        </div>
     </section>
 
     <script src="js/app.js"></script>
@@ -64,3 +76,4 @@
     </footer>
 </body>
 </html>
+
