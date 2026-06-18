@@ -5,100 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NYC Urban Mobility Data Explorer</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header>
+        <h1>NYC Urban Mobility Data Explorer</h1>
+        <p>January 2019 — Yellow Taxi Trip Records</p>
+    </header>
+    <section class="filters">
+        <select id="boroughFilter">
+            <option value="all">All Boroughs</option>
+        </select>
+        <select id="paymentFilter">
+            <option value="all">All Payments</option>
+        </select>
+        <button id="resetBtn">Reset</button>
+    </section>
 
-  <header>
-    <h1>NYC Urban Mobility Data Explorer</h1>
-    <p>January 2019 — Yellow Taxi Trip Data</p>
-  </header>
+    <section class="kpi-cards">
+        <div class="card"><p>Total Trips</p><h2 id="totalTrips">—</h2></div>
+        <div class="card"><p>Average Fare</p><h2 id="avgFare">—</h2></div>
+        <div class="card"><p>Average Distance</p><h2 id="avgDistance">—</h2></div>
+        <div class="card"><p>Average Duration</p><h2 id="avgDuration">—</h2></div>
+        <div class="card"><p>Airport Trips</p><h2 id="airportTrips">—</h2></div>
+    </section>
 
-  <!-- Filters -->
-  <section class="filters">
-    <div class="filter-group">
-      <label for="hourFilter">Hour of Day</label>
-      <select id="hourFilter">
-        <option value="all">All Hours</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label for="paymentFilter">Payment Type</label>
-      <select id="paymentFilter">
-        <option value="all">All</option>
-        <option value="1">Credit Card</option>
-        <option value="2">Cash</option>
-        <option value="4">Dispute</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label for="airportFilter">Trip Type</label>
-      <select id="airportFilter">
-        <option value="all">All Trips</option>
-        <option value="true">Airport Trips</option>
-        <option value="false">Non-Airport Trips</option>
-      </select>
-    </div>
-    <button id="applyFilters">Apply Filters</button>
-    <button id="resetFilters">Reset</button>
-  </section>
+    <section class="map-section">
+        <h2>Trip Density by Zone</h2>
+        <div id="map"></div>
+        <p id="avgSpeed"></p>
+    </section>
 
-  <!-- KPI Cards -->
-  <section class="kpi-cards">
-    <div class="card">
-      <span class="card-label">Total Trips</span>
-      <span class="card-value" id="totalTrips">—</span>
-    </div>
-    <div class="card">
-      <span class="card-label">Avg Fare</span>
-      <span class="card-value" id="avgFare">—</span>
-    </div>
-    <div class="card">
-      <span class="card-label">Avg Distance (mi)</span>
-      <span class="card-value" id="avgDistance">—</span>
-    </div>
-    <div class="card">
-      <span class="card-label">Avg Duration (min)</span>
-      <span class="card-value" id="avgDuration">—</span>
-    </div>
-    <div class="card">
-      <span class="card-label">Airport Trips</span>
-      <span class="card-value" id="airportTrips">—</span>
-    </div>
-  </section>
+    <section class="charts">
+        <div class="chart-box">
+            <div class="chart-header">
+                <h3>Trip Patterns</h3>
+                <select id="tripPatternSelect">
+                    <option value="hour">By Hour of Day</option>
+                    <option value="day">By Day of Week</option>
+                </select>
+            </div>
+            <canvas id="tripPatternChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <div class="chart-header">
+                <h3>Fare &amp; Payment</h3>
+                <select id="farePaymentSelect">
+                    <option value="fare">Fare Distribution</option>
+                    <option value="payment">Payment Types</option>
+                </select>
+            </div>
+            <canvas id="farePaymentChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Top 10 Pickup Zones</h3>
+            <canvas id="topZonesChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Airport vs City Trips</h3>
+            <canvas id="airportChart"></canvas>
+        </div>
+    </section>
 
-  <!-- Charts -->
-  <section class="charts-grid">
-    <div class="chart-box">
-      <h2>Trips by Hour of Day</h2>
-      <canvas id="tripsByHourChart"></canvas>
-    </div>
-    <div class="chart-box">
-      <h2>Payment Type Breakdown</h2>
-      <canvas id="paymentChart"></canvas>
-    </div>
-    <div class="chart-box">
-      <h2>Fare Amount Distribution</h2>
-      <canvas id="fareDistChart"></canvas>
-    </div>
-    <div class="chart-box">
-      <h2>Trips by Day of Week</h2>
-      <canvas id="tripsByDowChart"></canvas>
-    </div>
-    <div class="chart-box wide">
-      <h2>Top 10 Pickup Zones</h2>
-      <canvas id="topZonesChart"></canvas>
-    </div>
-    <div class="chart-box wide">
-      <h2>Avg Speed by Hour (mph)</h2>
-      <canvas id="speedByHourChart"></canvas>
-    </div>
-  </section>
+    <script src="js/app.js"></script>
 
-  <footer>
-    <p>NYC TLC Yellow Taxi Data — Team 1 &copy; 2025</p>
-  </footer>
-
-  <script src="js/app.js"></script>
+    <footer>
+        <p>NYC TLC Yellow Taxi Data — Team 1 &copy; 2026</p>
+    </footer>
 </body>
 </html>
+

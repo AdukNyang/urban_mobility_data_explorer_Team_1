@@ -6,91 +6,55 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #0f1117;
-  color: #e0e0e0;
+  background: #f4f4f4;
+  color: #333;
   min-height: 100vh;
 }
 
 header {
-  background: #1a1d27;
-  padding: 24px 32px;
-  border-bottom: 2px solid #f5c518;
+  background: #1a7a4a;
+  padding: 20px 32px;
+  border-bottom: 3px solid #f5c518;
 }
 
 header h1 {
-  font-size: 1.8rem;
-  color: #f5c518;
+  font-size: 1.6rem;
+  color: #ffffff;
 }
 
 header p {
-  color: #888;
+  color: #d0f0e0;
   margin-top: 4px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
-/* Filters */
 .filters {
   display: flex;
-  flex-wrap: wrap;
   gap: 16px;
-  align-items: flex-end;
-  padding: 20px 32px;
-  background: #13161f;
-  border-bottom: 1px solid #2a2d3a;
+  align-items: center;
+  padding: 16px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
 }
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.filter-group label {
-  font-size: 0.75rem;
-  color: #aaa;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.filter-group select {
-  background: #1e2130;
-  color: #e0e0e0;
-  border: 1px solid #3a3d50;
-  border-radius: 6px;
+.filters select {
   padding: 8px 12px;
-  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.88rem;
   cursor: pointer;
 }
 
 .filters button {
-  padding: 9px 20px;
+  padding: 8px 18px;
+  background: #1a7a4a;
+  color: #ffffff;
   border: none;
   border-radius: 6px;
+  font-size: 0.88rem;
   cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: background 0.2s;
 }
 
-#applyFilters {
-  background: #f5c518;
-  color: #0f1117;
-}
-
-#applyFilters:hover {
-  background: #e0b000;
-}
-
-#resetFilters {
-  background: #2a2d3a;
-  color: #e0e0e0;
-}
-
-#resetFilters:hover {
-  background: #3a3d50;
-}
-
-/* KPI Cards */
 .kpi-cards {
   display: flex;
   flex-wrap: wrap;
@@ -99,90 +63,132 @@ header p {
 }
 
 .card {
-  background: #1a1d27;
-  border: 1px solid #2a2d3a;
+  background: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  padding: 20px 28px;
+  padding: 20px 24px;
   flex: 1;
-  min-width: 140px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: border-color 0.2s;
+  min-width: 150px;
 }
 
-.card:hover {
-  border-color: #f5c518;
-}
-
-.card-label {
-  font-size: 0.75rem;
+.card p {
+  font-size: 0.78rem;
   color: #888;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.card-value {
-  font-size: 1.6rem;
+.card h2 {
+  font-size: 1.8rem;
   font-weight: 700;
-  color: #f5c518;
+  color: #1a7a4a;
+  margin-top: 6px;
 }
 
-/* Charts Grid */
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  padding: 0 32px 32px;
+.map-section {
+  padding: 24px 32px;
 }
 
-.chart-box {
-  background: #1a1d27;
-  border: 1px solid #2a2d3a;
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.chart-box.wide {
-  grid-column: span 2;
-}
-
-.chart-box h2 {
-  font-size: 0.95rem;
-  color: #ccc;
-  margin-bottom: 16px;
-  font-weight: 600;
+.map-section h2 {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-canvas {
-  max-height: 280px;
+#map {
+  height: 450px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+#avgSpeed {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  padding: 24px 32px;
+}
+
+.chart-box {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.chart-header select {
+  padding: 4px 8px;
+  border: 1px solid #1a7a4a;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #1a7a4a;
+  cursor: pointer;
 }
 
 footer {
   text-align: center;
   padding: 20px;
-  color: #555;
-  font-size: 0.8rem;
-  border-top: 1px solid #1e2130;
+  color: #888;
+  font-size: 0.78rem;
+  border-top: 1px solid #ddd;
+  margin-top: 32px;
 }
 
 @media (max-width: 768px) {
-  .charts-grid {
+  .charts {
     grid-template-columns: 1fr;
-    padding: 0 16px 24px;
   }
-  .chart-box.wide {
-    grid-column: span 1;
-  }
+
   .kpi-cards {
     padding: 16px;
   }
+
   .filters {
+    flex-wrap: wrap;
     padding: 16px;
   }
+
   header {
     padding: 16px;
   }
+}
+
+.chart-box h3 {
+  font-size: 0.88rem;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+
+.map-legend {
+  background: #ffffff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.82rem;
+  line-height: 1.8;
+}
+
+.map-legend span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
 }

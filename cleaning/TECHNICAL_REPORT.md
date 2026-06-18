@@ -46,7 +46,7 @@ clean data.
 | 6 | Drop exact duplicates | 7,280,912 |
 | 7 | Feature engineering (Issue J) | 7,280,912 |
 
-Final cleaned dataset: **(your final row count)** rows.
+Final cleaned dataset: **7,280,912** rows.
 
 ### 2.4 An unexpected observation
 
