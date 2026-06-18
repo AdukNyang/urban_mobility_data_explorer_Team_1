@@ -33,6 +33,13 @@ CLEAN_CSV  = Path(__file__).resolve().parent.parent.parent / \
 
 CHUNK_SIZE = 10_000   # increased from 5,000 to reduce round trips
 
+# Hard cap on total rows to insert. Aiven's free tier has a 5GB
+# storage limit — loading all 7.28M rows previously filled this
+# and triggered read-only mode. Capping at 1,000,000 keeps us
+# safely under the limit while still being a large, representative
+# sample of the cleaned dataset.
+MAX_ROWS = 1_000_000
+
 # Read resume offset from command line argument (default 0)
 SKIP_ROWS  = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 
@@ -183,6 +190,15 @@ def main():
 
     for chunk in reader:
         chunk_number += 1
+
+        # Stop once we hit the row cap, even mid-chunk-stream.
+        # Trim the chunk if it would push us over MAX_ROWS.
+        remaining_budget = MAX_ROWS - total_inserted
+        if remaining_budget <= 0:
+            print(f"\nReached MAX_ROWS cap of {MAX_ROWS:,}. Stopping before storage limit.")
+            break
+        if len(chunk) > remaining_budget:
+            chunk = chunk.iloc[:remaining_budget]
 
         rows = [row_to_tuple(row) for _, row in chunk.iterrows()]
         conn = insert_chunk(conn, rows)
