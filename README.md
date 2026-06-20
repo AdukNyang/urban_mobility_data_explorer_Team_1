@@ -166,9 +166,10 @@ The frontend includes:
 │   └── src
 │       ├── clean.py
 │       └── top_10_zones.py
-├── diagrams
+├── docs
+│   ├──entity_relationship_diagram.pdf
 │   ├──system_acrhitecture_diagram.pdf
-│   └──entity_relationship_diagram.pdf
+│   └──Urban_Mobility_Technical_Report_Team_1.pdf
 ├── frontend
 │   ├── assets
 │   │   ├── Aduk.jpeg
@@ -356,7 +357,7 @@ Since Aiven uses SSL certificates, additional certificate configuration may be r
 ## System Architecture
 
 ```text
-assets/architecture.png
+docs/system_acrhitecture_diagram.pdf
 ```
 
 ---
@@ -364,7 +365,7 @@ assets/architecture.png
 ## Entity Relationship Diagram
 
 ```text
-assets/erd.png
+docs/entity_relationship_diagram.pdf
 ```
 
 ---
