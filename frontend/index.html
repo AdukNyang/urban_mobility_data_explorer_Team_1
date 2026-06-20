@@ -1,79 +1,363 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>NYC Urban Mobility Data Explorer</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <title>NYC Mobility — Urban Data Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-        <h1>NYC Urban Mobility Data Explorer</h1>
-        <p>January 2019 — Yellow Taxi Trip Records</p>
-    </header>
-    <section class="filters">
-        <select id="boroughFilter">
-            <option value="all">All Boroughs</option>
-        </select>
+
+  <!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <a href="../Hero/index.html" class="brand-home-link">
+      <div class="brand-mark">N</div>
+      <div class="brand-info">
+        <span class="brand-name">NYC Mobility</span>
+        <span class="brand-sub">Jan 2019 · Yellow Taxi</span>
+      </div>
+      </a>
+    </div>
+
+    <div class="sidebar-live">
+      <span class="live-dot" id="liveDot"></span>
+      <span class="live-text" id="liveText">CONNECTING...</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-item active" data-section="kpis" onclick="scrollToSection('section-kpis')">
+        <span class="nav-num">01</span><span class="nav-label">Overview</span>
+      </button>
+      <button class="nav-item" data-section="map" onclick="scrollToSection('section-map')">
+        <span class="nav-num">02</span><span class="nav-label">City Map</span>
+      </button>
+      <button class="nav-item" data-section="time" onclick="scrollToSection('section-time')">
+        <span class="nav-num">03</span><span class="nav-label">Temporal</span>
+      </button>
+      <button class="nav-item" data-section="fares" onclick="scrollToSection('section-fares')">
+        <span class="nav-num">04</span><span class="nav-label">Fares</span>
+      </button>
+      <button class="nav-item" data-section="zones" onclick="scrollToSection('section-zones')">
+        <span class="nav-num">05</span><span class="nav-label">Zones</span>
+      </button>
+      <button class="nav-item" data-section="speed" onclick="scrollToSection('section-speed')">
+        <span class="nav-num">06</span><span class="nav-label">Speed</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-filters">
+      <div class="filter-active-bar" id="filterBar"></div>
+      <div class="filter-heading">Filter Data</div>
+      <div class="filter-row">
+        <label>Hour of Day</label>
+        <select id="hourFilter"><option value="all">All hours</option></select>
+      </div>
+      <div class="filter-row">
+        <label>Payment Type</label>
         <select id="paymentFilter">
-            <option value="all">All Payments</option>
+          <option value="all">All payments</option>
+          <option value="1">Credit Card</option>
+          <option value="2">Cash</option>
+          <option value="4">Dispute</option>
         </select>
-        <button id="resetBtn">Reset</button>
+      </div>
+      <div class="filter-row">
+        <label>Trip Type</label>
+        <select id="airportFilter">
+          <option value="all">All trips</option>
+          <option value="true">Airport only</option>
+          <option value="false">City trips</option>
+        </select>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-apply" id="applyFilters">Apply</button>
+        <button class="btn-reset" id="resetFilters">Reset</button>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+        <span class="theme-icon" id="themeIcon">◑</span>
+        <span id="themeLabel">Dark mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════ MAIN ═══════════════════ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Urban Mobility<br>Data Explorer</h1>
+        <span class="topbar-sub">New York City · Yellow Taxi · January 2019</span>
+      </div>
+      <div class="topbar-meta">
+        <div class="meta-item">
+          <span class="meta-label">Session</span>
+          <span class="meta-value">2019/01</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Records</span>
+          <span class="meta-value" id="recordCount">—</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Source</span>
+          <span class="meta-value">NYC TLC</span>
+        </div>
+        <div class="status-pill" id="statusPill">
+          <span class="status-dot"></span>
+          <span id="statusText">Connecting...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Filter context bar -->
+    <div class="filter-context" id="filterContext">
+      <span class="filter-context-label" id="filterContextLabel">Showing filtered data</span>
+      <button class="filter-context-clear" id="filterContextClear">✕ Clear filters</button>
+    </div>
+
+    <!-- ── 01 OVERVIEW ── -->
+    <section class="section" id="section-kpis">
+      <div class="section-tag">01 — Overview</div>
+      <div class="kpi-grid">
+        <div class="kpi-card primary">
+          <div class="kpi-label">Total Trips</div>
+          <div class="kpi-value" id="totalTrips">—</div>
+          <div class="kpi-delta neutral" id="deltaTrips" style="display:none"></div>
+          <div class="kpi-sub">January 2019</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Fare</div>
+          <div class="kpi-value" id="avgFare">—</div>
+          <div class="kpi-delta neutral" id="deltaFare" style="display:none"></div>
+          <div class="kpi-sub">per trip</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Distance</div>
+          <div class="kpi-value" id="avgDistance">—</div>
+          <div class="kpi-delta neutral" id="deltaDist" style="display:none"></div>
+          <div class="kpi-sub">miles</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Duration</div>
+          <div class="kpi-value" id="avgDuration">—</div>
+          <div class="kpi-delta neutral" id="deltaDur" style="display:none"></div>
+          <div class="kpi-sub">minutes</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Airport Trips</div>
+          <div class="kpi-value" id="airportTrips">—</div>
+          <div class="kpi-delta neutral" id="deltaAirport" style="display:none"></div>
+          <div class="kpi-sub">JFK · LGA · EWR</div>
+        </div>
+      </div>
+
+      <div class="filter-impact" id="filterImpact" style="display:none">
+        <div class="fi-header">
+          <div class="fi-title">
+            <span class="fi-icon">⚡</span>
+            Filter Impact
+          </div>
+          <div class="fi-subtitle" id="fiSubtitle">Showing how your filter changes the picture</div>
+        </div>
+        <div class="fi-table">
+          <div class="fi-table-head">
+            <span>Metric</span>
+            <span>All Trips (Jan 2019)</span>
+            <span>Your Filter</span>
+            <span>Change</span>
+          </div>
+          <div class="fi-row" id="fiRowTrips">
+            <span class="fi-metric">Total Trips</span>
+            <span class="fi-baseline" id="fiBaseTrips">—</span>
+            <span class="fi-current" id="fiCurrTrips">—</span>
+            <span class="fi-change" id="fiChgTrips">—</span>
+          </div>
+          <div class="fi-row" id="fiRowFare">
+            <span class="fi-metric">Avg Fare</span>
+            <span class="fi-baseline" id="fiBaseFare">—</span>
+            <span class="fi-current" id="fiCurrFare">—</span>
+            <span class="fi-change" id="fiChgFare">—</span>
+          </div>
+          <div class="fi-row" id="fiRowDist">
+            <span class="fi-metric">Avg Distance</span>
+            <span class="fi-baseline" id="fiBaseDist">—</span>
+            <span class="fi-current" id="fiCurrDist">—</span>
+            <span class="fi-change" id="fiChgDist">—</span>
+          </div>
+          <div class="fi-row" id="fiRowDur">
+            <span class="fi-metric">Avg Duration</span>
+            <span class="fi-baseline" id="fiBaseDur">—</span>
+            <span class="fi-current" id="fiCurrDur">—</span>
+            <span class="fi-change" id="fiChgDur">—</span>
+          </div>
+        </div>
+        <div class="fi-insight" id="fiInsight">—</div>
+      </div>
     </section>
 
-    <section class="kpi-cards">
-        <div class="card"><p>Total Trips</p><h2 id="totalTrips">—</h2></div>
-        <div class="card"><p>Average Fare</p><h2 id="avgFare">—</h2></div>
-        <div class="card"><p>Average Distance</p><h2 id="avgDistance">—</h2></div>
-        <div class="card"><p>Average Duration</p><h2 id="avgDuration">—</h2></div>
-        <div class="card"><p>Airport Trips</p><h2 id="airportTrips">—</h2></div>
+    <div class="divider"></div>
+
+    <!-- ── 02 MAP ── -->
+    <section class="map-section" id="section-map">
+      <div class="section-tag">02 — City Map</div>
+
+      <div class="map-container">
+        <div id="leafletMap" style="width:100%;height:100%;border-radius:inherit;z-index:1;"></div>
+        <div class="map-legend">
+          <div class="legend-title">Pickup Density</div>
+          <div class="legend-scale">
+            <div class="legend-bar"></div>
+          </div>
+          <div class="legend-labels">
+            <span>Low</span><span>High</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-callouts">
+        <div class="map-callout">
+          <span class="map-callout-tag">🏙 Midtown Corridor</span>
+          <div class="map-callout-title">The engine of NYC taxi demand</div>
+          <div class="map-callout-body">Midtown and Upper East Side alone account for over 35% of all January pickups — offices, hotels, and Penn Station converge here.</div>
+        </div>
+        <div class="map-callout">
+          <span class="map-callout-tag">✈ Airport Routes</span>
+          <div class="map-callout-title">JFK &amp; LaGuardia in the top 10</div>
+          <div class="map-callout-body">Airport trips fetch flat fares and larger tips — yet they represent only 6% of volume. The economics are outsized relative to their count.</div>
+        </div>
+        <div class="map-callout">
+          <span class="map-callout-tag">🌆 Outer Boroughs</span>
+          <div class="map-callout-title">The sharp dropoff past the bridge</div>
+          <div class="map-callout-body">Yellow cab demand collapses in Brooklyn, Queens, and the Bronx. This January data predates the green cab expansion that would change this story.</div>
+        </div>
+      </div>
     </section>
 
-    <section class="map-section">
-        <h2>Trip Density by Zone</h2>
-        <div id="map"></div>
-        <p id="avgSpeed"></p>
+    <div class="divider"></div>
+
+    <!-- ── 03 TEMPORAL ── -->
+    <section class="section" id="section-time">
+      <div class="section-tag">03 — Temporal Patterns</div>
+      <div class="chart-row">
+        <div class="chart-panel">
+          <div class="panel-head">
+            <span class="panel-title">Trips by Hour</span>
+            <span class="panel-note">Rush hours highlighted</span>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="hourChart" role="img" aria-label="Trips by hour of day"></canvas>
+          </div>
+          <div class="story-note" id="storyHour">
+            The city never truly sleeps — but demand troughs at 4 AM before surging again with the morning commute. Evening rush peaks harder than morning.
+          </div>
+        </div>
+        <div class="chart-panel">
+          <div class="panel-head">
+            <span class="panel-title">Trips by Day of Week</span>
+            <span class="panel-note">Mon → Sun</span>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="dowChart" role="img" aria-label="Trips by day of week"></canvas>
+          </div>
+          <div class="story-note" id="storyDow">
+            Friday is the peak day. Sunday is the quietest. The weekly rhythm is remarkably consistent — until a storm or holiday breaks it.
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section class="charts">
-        <div class="chart-box">
-            <div class="chart-header">
-                <h3>Trip Patterns</h3>
-                <select id="tripPatternSelect">
-                    <option value="hour">By Hour of Day</option>
-                    <option value="day">By Day of Week</option>
-                </select>
-            </div>
-            <canvas id="tripPatternChart"></canvas>
+    <div class="divider"></div>
+
+    <!-- ── 04 FARES ── -->
+    <section class="section" id="section-fares">
+      <div class="section-tag">04 — Fare &amp; Payment Analysis</div>
+      <div class="chart-row">
+        <div class="chart-panel">
+          <div class="panel-head">
+            <span class="panel-title">Fare Distribution</span>
+            <span class="panel-note">Most common bucket highlighted</span>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="fareChart" role="img" aria-label="Fare distribution"></canvas>
+          </div>
+          <div class="story-note" id="storyFare">
+            Most trips cost $10–$15 — a short Manhattan hop. The long tail toward $50+ is almost entirely airport runs.
+          </div>
         </div>
-        <div class="chart-box">
-            <div class="chart-header">
-                <h3>Fare &amp; Payment</h3>
-                <select id="farePaymentSelect">
-                    <option value="fare">Fare Distribution</option>
-                    <option value="payment">Payment Types</option>
-                </select>
-            </div>
-            <canvas id="farePaymentChart"></canvas>
+        <div class="chart-panel">
+          <div class="panel-head">
+            <span class="panel-title">Payment Type</span>
+            <span class="panel-note">Tip % recorded for card only</span>
+          </div>
+          <div class="chart-wrap" style="height:220px">
+            <canvas id="payChart" role="img" aria-label="Payment type breakdown"></canvas>
+          </div>
+          <div class="story-note" id="storyPay">
+            Card payments dominate at ~70%. Cash tip data is unrecorded by TLC — the true tip rate is higher than the data suggests.
+          </div>
         </div>
-        <div class="chart-box">
-            <h3>Top 10 Pickup Zones</h3>
-            <canvas id="topZonesChart"></canvas>
-        </div>
-        <div class="chart-box">
-            <h3>Airport vs City Trips</h3>
-            <canvas id="airportChart"></canvas>
-        </div>
+      </div>
     </section>
 
-    <script src="js/app.js"></script>
+    <div class="divider"></div>
 
-    <footer>
-        <p>NYC TLC Yellow Taxi Data — Team 1 &copy; 2026</p>
+    <!-- ── 05 ZONES ── -->
+    <section class="section" id="section-zones">
+      <div class="section-tag">05 — Zone Intelligence</div>
+      <div class="panel-head" style="margin-bottom: 1rem;">
+        <span class="panel-title">Top 10 Pickup Zones — Ranked by Volume</span>
+        <span class="panel-note">MinHeap Top-K · All 263 zones processed</span>
+      </div>
+      <div class="zones-feed">
+        <div class="zones-feed-header">
+          <span>Rank</span>
+          <span>Zone</span>
+          <span>Borough</span>
+          <span>Volume</span>
+          <span>Count</span>
+        </div>
+        <div id="zonesBody"><div class="feed-loading">Loading zone data...</div></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ── 06 ECONOMICS ── -->
+    <section class="section" id="section-speed">
+      <div class="section-tag">06 — Trip Economics</div>
+      <div class="chart-panel full">
+        <div class="panel-head">
+          <span class="panel-title">Cost per Mile vs. Trip Distance</span>
+          <span class="panel-note">The base fare economics story</span>
+        </div>
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="farePerMileChart" role="img" aria-label="Fare per mile vs trip distance"></canvas>
+        </div>
+        <div class="story-note" id="storyFarePerMile">
+          The $2.50 base fare makes short rides brutally expensive per mile — a 1-mile hop costs ~$8/mile once surcharges land. A 15-mile JFK flat-fare run drops below $4/mile. Distance is the great equalizer.
+        </div>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <span>NYC TLC Yellow Taxi — Team 1 &copy; 2026</span>
+      <span id="footerFilter">7.28M trips · Aiven PostgreSQL · Flask API</span>
     </footer>
+
+  </main>
+
+  <script src="js/app.js"></script>
+
 </body>
 </html>
-

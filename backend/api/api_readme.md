@@ -37,7 +37,7 @@ GET /api/health
 ```
 
 **Example Response:**
-```json
+```js/api/healthon
 {
   "status": "ok",
   "message": "NYC Taxi API is running"
