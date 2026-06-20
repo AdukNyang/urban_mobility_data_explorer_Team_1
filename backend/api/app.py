@@ -28,7 +28,10 @@ app = Flask(__name__)
 # to call this API from a different port or domain.
 # Without this, the browser would block frontend requests to
 # the API as a security measure.
-CORS(app)
+CORS(app, origins=[
+    "http://localhost:5000",              # local dev
+    "https://urban-mobility-data-explorer-team-1.onrender.com"  # production 
+])
 
 
 # -------------------------------------------------------------
