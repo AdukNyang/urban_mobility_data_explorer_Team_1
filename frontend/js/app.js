@@ -8,10 +8,12 @@
 // If opened directly (file://) or a different origin, fall back to localhost.
 const API = (() => {
   const origin = window.location.origin;
-  if (origin.startsWith('http://localhost:5000') || origin.startsWith('http://127.0.0.1:5000')) {
-    return '/api';                          // served by Flask → relative, no CORS
+  // Local development
+  if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+    return 'http://localhost:5000/api';
   }
-  return 'http://localhost:5000/api';       // fallback (needs Flask CORS enabled)
+  // Production
+  return 'https://urban-mobility-data-explorer-team-1.onrender.com/api';
 })();
 
 // Chart registry

@@ -29,8 +29,10 @@ app = Flask(__name__)
 # Without this, the browser would block frontend requests to
 # the API as a security measure.
 CORS(app, origins=[
-    "http://localhost:5000",              # local dev
-    "https://urban-mobility-data-explorer-team-1.onrender.com"  # production 
+    "http://localhost:5500",
+    "http://localhost:5000",
+    "http://127.0.0.1:5500",
+    "https://urban-mobility-data-explorer-team-1.onrender.com"
 ])
 
 
@@ -59,7 +61,5 @@ def health():
 #  Run the server
 # -------------------------------------------------------------
 if __name__ == "__main__":
-    # debug=True means Flask auto-reloads when you save a file
-    # and shows detailed error messages in the browser.
-    # Never use debug=True in production.
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
