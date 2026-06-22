@@ -373,7 +373,7 @@ docs/entity_relationship_diagram.pdf
 ## Video Walkthrough
 
 ```text
-https://youtu.be/E1JXXKbDgl8
+https://youtu.be/E1JXXKbDgl
 ```
 
 ---
