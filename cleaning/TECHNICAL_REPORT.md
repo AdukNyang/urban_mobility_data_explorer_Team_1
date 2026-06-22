@@ -74,3 +74,75 @@ them. The `congestion_surcharge` zero-fill is a documented assumption —
 empty values likely reflect either a non-applicable trip or a vendor 
 reporting gap, not a known surcharge value. Cash tips are unrecorded by 
 design; downstream tip analytics are explicitly card-only.
+
+## 3. Algorithmic Logic and Data Structures
+
+### Problem
+Identify the ten pickup zones with the highest trip count from the cleaned 
+dataset (~7.3M rows). This powers the dashboard's "busiest pickup zones" 
+panel, which is a key analytical insight for urban mobility.
+
+### Approach: Top-K via a manually-implemented MinHeap
+A built-in approach would be `df["PULocationID"].value_counts().head(10)`. 
+To satisfy the manual-implementation requirement, we implement:
+
+1. A single-pass hash count of pickup zone IDs (O(n))
+2. A binary MinHeap from scratch (push, pop, sift up/down — no heapq)
+3. A top-K selection algorithm that maintains a heap of size k, evicting 
+   the smallest when a larger element appears (O(m log k) where m = 
+   unique zones)
+
+### Pseudo-code
+
+ALGORITHM TopK_Zones(trips, k)
+INPUT:  trips — array of (PULocationID, ...) records
+        k     — desired number of top zones
+
+STEP 1: Count occurrences per zone in a single pass
+    counts ← empty hash map
+    FOR each trip IN trips:
+        counts[trip.PULocationID] += 1
+
+STEP 2: Maintain a MinHeap of size k while iterating zone counts
+    heap ← empty MinHeap
+    FOR each (zone, count) IN counts:
+        IF size(heap) < k:
+            heap.push((count, zone))
+        ELSE IF count > heap.peek().count:
+            heap.pop()                  // evict smallest
+            heap.push((count, zone))    // insert new
+
+STEP 3: Drain heap, reverse for descending order
+    result ← empty list
+    WHILE heap is not empty:
+        result.append(heap.pop())
+    REVERSE result
+    RETURN result
+
+COMPLEXITY:
+    Time:  O(n + m log k)
+           - Step 1: O(n) — one pass through trips
+           - Step 2: O(m log k) — each heap push/pop is O(log k)
+           - Step 3: O(k log k) — drain k elements
+    Space: O(m + k)
+           - Counts map: O(m) unique zones
+           - Heap: O(k)
+
+
+### Complexity analysis
+- **Time**: O(n + m log k)
+  - O(n) for the initial count
+  - O(m log k) for the heap-based selection (m heap operations, each O(log k))
+- **Space**: O(m + k)
+  - O(m) for the counts hash map
+  - O(k) for the heap
+
+### Why a MinHeap (not a MaxHeap)
+A MinHeap's root holds the smallest element. To keep the largest k 
+elements seen so far, we check incoming elements against the root: if 
+larger, evict the root. The heap always contains "the largest k so far."
+
+### Code location
+`cleaning/src/top_k_zones.py` — implementation
+Run: `python cleaning/src/top_k_zones.py`
+
