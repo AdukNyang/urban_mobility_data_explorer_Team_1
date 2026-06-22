@@ -135,26 +135,23 @@ The frontend includes:
 .
 ├── README.md
 ├── backend
-│   ├── __pycache__
-│   │   └── config.cpython-312.pyc
+│   ├── Procifile
 │   ├── api
 │   │   ├── api_readme.md
 │   │   ├── app.py
 │   │   ├── requirements.txt
 │   │   └── routes
-│   │       ├── __pycache__
-│   │       │   ├── trips.cpython-312.pyc
-│   │       │   └── zones.cpython-312.pyc
+│   │       ├── __init__.py
 │   │       ├── trips.py
 │   │       └── zones.py
 │   ├── config.py
 │   ├── db
-│   │   ├── ca.pem
 │   │   ├── check_fk_values.py
 │   │   ├── load_trips.py
 │   │   ├── schema.sql
 │   │   └── seed_lookup.sql
 │   ├── db_changelog.md
+│   ├── requirements.txt
 │   └── technical_reflection.md
 ├── cleaning
 │   ├── TECHNICAL_REPORT.md
@@ -167,15 +164,16 @@ The frontend includes:
 │       ├── clean.py
 │       └── top_10_zones.py
 ├── docs
-│   ├──entity_relationship_diagram.pdf
-│   ├──system_acrhitecture_diagram.pdf
-│   └──Urban_Mobility_Technical_Report_Team_1.pdf
+│   ├── Urban_Mobility_Technical_Report_Team_1.pdf
+│   ├── entity_relationship_diagram.pdf
+│   └── system_acrhitecture_diagram.pdf
 ├── frontend
 │   ├── assets
 │   │   ├── Aduk.jpeg
 │   │   ├── Ayomide.jpeg
 │   │   ├── Beni.jpeg
-│   │   └── Bol.jpeg
+│   │   ├── Bol.jpeg
+│   │   └── favicon.jpg
 │   ├── css
 │   │   ├── index.css
 │   │   └── main.css
@@ -185,7 +183,6 @@ The frontend includes:
 │   ├── js
 │   │   └── app.js
 │   └── main.html
-├── package-lock.json
 └── requirements.txt
 ```
 
